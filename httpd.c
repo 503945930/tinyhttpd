@@ -51,6 +51,7 @@ void unimplemented(int);
  * return.  Process the request appropriately.
  * Parameters: the socket connected to the client */
 /**********************************************************************/
+//处理从套接字上监听到的一个 HTTP 请求，在这里可以很大一部分地体现服务器处理请求流程。
 void accept_request(void *arg)
 {
     int client = *(int*)arg;
@@ -136,6 +137,7 @@ void accept_request(void *arg)
 /* Inform the client that a request it has made has a problem.
  * Parameters: client socket */
 /**********************************************************************/
+//返回给客户端这是个错误请求，HTTP 状态吗 400 BAD REQUEST.
 void bad_request(int client)
 {
     char buf[1024];
@@ -159,6 +161,7 @@ void bad_request(int client)
  * Parameters: the client socket descriptor
  *             FILE pointer for the file to cat */
 /**********************************************************************/
+//读取服务器上某个文件写到 socket 套接字。
 void cat(int client, FILE *resource)
 {
     char buf[1024];
@@ -175,6 +178,7 @@ void cat(int client, FILE *resource)
 /* Inform the client that a CGI script could not be executed.
  * Parameter: the client socket descriptor. */
 /**********************************************************************/
+//主要处理发生在执行 cgi 程序时出现的错误
 void cannot_execute(int client)
 {
     char buf[1024];
@@ -194,6 +198,7 @@ void cannot_execute(int client)
  * on value of errno, which indicates system call errors) and exit the
  * program indicating an error. */
 /**********************************************************************/
+//把错误信息写到 perror 并退出
 void error_die(const char *sc)
 {
     perror(sc);
@@ -206,6 +211,7 @@ void error_die(const char *sc)
  * Parameters: client socket descriptor
  *             path to the CGI script */
 /**********************************************************************/
+//运行 cgi 程序的处理，也是个主要函数
 void execute_cgi(int client, const char *path,
         const char *method, const char *query_string)
 {
@@ -310,6 +316,7 @@ void execute_cgi(int client, const char *path,
  *             the size of the buffer
  * Returns: the number of bytes stored (excluding null) */
 /**********************************************************************/
+// 读取套接字的一行，把回车换行等情况都统一为换行符结束。
 int get_line(int sock, char *buf, int size)
 {
     int i = 0;
@@ -347,6 +354,7 @@ int get_line(int sock, char *buf, int size)
 /* Parameters: the socket to print the headers on
  *             the name of the file */
 /**********************************************************************/
+//把 HTTP 响应的头部写到套接字。
 void headers(int client, const char *filename)
 {
     char buf[1024];
@@ -365,6 +373,7 @@ void headers(int client, const char *filename)
 /**********************************************************************/
 /* Give a client a 404 not found status message. */
 /**********************************************************************/
+//主要处理找不到请求的文件时的情况。
 void not_found(int client)
 {
     char buf[1024];
@@ -396,6 +405,7 @@ void not_found(int client)
  *              file descriptor
  *             the name of the file to serve */
 /**********************************************************************/
+//调用 cat 把服务器文件返回给浏览器。
 void serve_file(int client, const char *filename)
 {
     FILE *resource = NULL;
@@ -425,6 +435,7 @@ void serve_file(int client, const char *filename)
  * Parameters: pointer to variable containing the port to connect on
  * Returns: the socket */
 /**********************************************************************/
+//初始化 httpd 服务，包括建立套接字，绑定端口，进行监听等
 int startup(u_short *port)
 {
     int httpd = 0;
@@ -493,6 +504,7 @@ int startup(u_short *port)
  * implemented.
  * Parameter: the client socket */
 /**********************************************************************/
+//返回给浏览器表明收到的 HTTP 请求所用的 method 不被支持。
 void unimplemented(int client)
 {
     char buf[1024];
@@ -516,7 +528,7 @@ void unimplemented(int client)
 }
 
 /**********************************************************************/
-
+//入口main函数
 int main(void)
 {
     int server_sock = -1;
